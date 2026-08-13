@@ -171,6 +171,12 @@ function renderJobs() {
     const tailorBtn = node.querySelector(".tailor-btn");
     tailorBtn.addEventListener("click", () => tailorOne(job.id, tailorBtn));
 
+    const fillBtn = node.querySelector(".fill-assist-btn");
+    if (job.url && !/linkedin\.com/i.test(job.url)) {
+      fillBtn.classList.remove("hidden");
+      fillBtn.addEventListener("click", () => fillAssistOne(job.id, fillBtn));
+    }
+
     const resumeLink = node.querySelector(".resume-link");
     const coverLink = node.querySelector(".cover-link");
     if (job.resume_path) { resumeLink.href = `/api/jobs/${job.id}/download/resume`; resumeLink.classList.remove("hidden"); }
@@ -213,6 +219,24 @@ async function tailorOne(jobId, btn) {
     await api(`/api/jobs/${jobId}/tailor`, { method: "POST" });
     toast("Draft resume + cover letter generated", "success");
     await Promise.all([loadJobs(), loadStats()]);
+  } catch (e) {
+    toast(e.message, "error");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = original;
+  }
+}
+
+async function fillAssistOne(jobId, btn) {
+  btn.disabled = true;
+  const original = btn.textContent;
+  btn.textContent = "Opening browser…";
+  try {
+    const result = await api(`/api/jobs/${jobId}/fill-assist`, { method: "POST" });
+    const bits = [];
+    if (result.filled.length) bits.push(`filled ${result.filled.length} field${result.filled.length === 1 ? "" : "s"}`);
+    if (result.left_for_you.length) bits.push(`${result.left_for_you.length} left for you`);
+    toast(`Browser window opened. ${bits.join(", ")}. Review everything and submit yourself.`, "success");
   } catch (e) {
     toast(e.message, "error");
   } finally {

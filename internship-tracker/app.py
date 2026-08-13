@@ -4,6 +4,7 @@ from flask import Flask, jsonify, request, render_template, send_file, abort
 
 import db
 import tailoring
+import fill_assist
 
 app = Flask(__name__)
 GENERATED_DIR = Path(__file__).parent / "data" / "generated"
@@ -142,10 +143,27 @@ def download_cover_letter(job_id):
                       download_name=f"cover_letter_{job['company']}_{job['title']}.docx".replace(" ", "_"))
 
 
+@app.route("/api/jobs/<int:job_id>/fill-assist", methods=["POST"])
+def fill_assist_job(job_id):
+    """Opens the posting's own application page in a real, visible browser
+    window and fills in whatever it can confidently match to your profile.
+    It never looks for or clicks a submit button — you review and submit
+    yourself in that same window."""
+    job = db.get_job(job_id)
+    if not job:
+        abort(404)
+    profile = db.get_profile()
+    try:
+        result = fill_assist.get_worker().fill(job, profile)
+    except RuntimeError as e:
+        return jsonify({"error": str(e)}), 400
+    return jsonify(result)
+
+
 @app.route("/api/stats")
 def get_stats():
     return jsonify(db.stats())
 
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5050)
+    app.run(debug=True, port=5050, threaded=True)

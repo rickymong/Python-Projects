@@ -173,3 +173,4 @@ cython_debug/
 # Internship Tracker local data (resume/profile info + generated documents)
 internship-tracker/data/*.db
 internship-tracker/data/generated/*
+internship-tracker/data/browser_profile/
