@@ -169,3 +169,7 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+# Internship Tracker local data (resume/profile info + generated documents)
+internship-tracker/data/*.db
+internship-tracker/data/generated/*
