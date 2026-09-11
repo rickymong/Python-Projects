@@ -1,0 +1,24 @@
+{
+  "months": [
+    { "month": "Aug 2026", "events": 1, "attendees": 40,  "gemini_signups": 22,  "social_reach": 1800,  "site_visits": 260 },
+    { "month": "Sep 2026", "events": 3, "attendees": 165, "gemini_signups": 98,  "social_reach": 6400,  "site_visits": 940 },
+    { "month": "Oct 2026", "events": 4, "attendees": 210, "gemini_signups": 141, "social_reach": 9100,  "site_visits": 1320 },
+    { "month": "Nov 2026", "events": 3, "attendees": 180, "gemini_signups": 120, "social_reach": 7700,  "site_visits": 1105 },
+    { "month": "Dec 2026", "events": 2, "attendees": 95,  "gemini_signups": 64,  "social_reach": 4300,  "site_visits": 610 }
+  ],
+  "events": [
+    { "date": "2026-08-28", "name": "Welcome Week Gemini Demo Table", "attendees": 40,  "signups": 22 },
+    { "date": "2026-09-10", "name": "Intro to Gemini for Students Workshop", "attendees": 55, "signups": 34 },
+    { "date": "2026-09-18", "name": "AI Study Tools Lunch and Learn", "attendees": 62, "signups": 40 },
+    { "date": "2026-09-25", "name": "Gemini for CS Assignments Session", "attendees": 48, "signups": 24 },
+    { "date": "2026-10-06", "name": "Business School AI Productivity Talk", "attendees": 70, "signups": 47 },
+    { "date": "2026-10-14", "name": "Hackathon Prep with Gemini", "attendees": 52, "signups": 38 },
+    { "date": "2026-10-21", "name": "Gemini Office Hours (drop in)", "attendees": 33, "signups": 19 },
+    { "date": "2026-10-29", "name": "Club Fair Gemini Booth", "attendees": 55, "signups": 37 },
+    { "date": "2026-11-05", "name": "AI for Job Applications Workshop", "attendees": 68, "signups": 45 },
+    { "date": "2026-11-13", "name": "Gemini Study Group Night", "attendees": 60, "signups": 41 },
+    { "date": "2026-11-20", "name": "Finals Season AI Tools Session", "attendees": 52, "signups": 34 },
+    { "date": "2026-12-03", "name": "End of Semester Recap and Demo", "attendees": 50, "signups": 33 },
+    { "date": "2026-12-09", "name": "Winter Break Learning with Gemini", "attendees": 45, "signups": 31 }
+  ]
+}

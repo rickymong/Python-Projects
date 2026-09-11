@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ambassador Impact Dashboard</title>
+  <style>
+    /* kept the styling simple so it reads clean when I show it to people */
+    :root { --bg:#f6f7f9; --card:#fff; --line:#e3e6eb; --text:#1b2330; --muted:#6a7380; --blue:#1a73e8; --green:#188038; }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif; background:var(--bg); color:var(--text); }
+    header { max-width:1000px; margin:0 auto; padding:26px 20px 6px; }
+    h1 { margin:0; font-size:24px; }
+    .sub { margin:4px 0 16px; color:var(--muted); }
+    .tiles { display:flex; gap:12px; flex-wrap:wrap; }
+    .tile { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:12px 18px; min-width:130px; }
+    .tile .num { font-size:24px; font-weight:700; }
+    .tile .label { font-size:12px; color:var(--muted); }
+    main { max-width:1000px; margin:0 auto 40px; padding:0 20px; }
+    .card { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:16px 18px; margin-top:16px; }
+    .card h2 { margin:0 0 12px; font-size:15px; color:var(--muted); font-weight:600; }
+    table { width:100%; border-collapse:collapse; }
+    th, td { text-align:left; padding:9px 10px; border-bottom:1px solid var(--line); font-size:14px; }
+    th { font-size:12px; text-transform:uppercase; letter-spacing:.03em; color:var(--muted); }
+    tr:last-child td { border-bottom:none; }
+    td:nth-child(3), td:nth-child(4), th:nth-child(3), th:nth-child(4) { text-align:right; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Ambassador Impact Dashboard</h1>
+    <p class="sub">how my Google Student Ambassador events and posts are doing, all in one place</p>
+    <div class="tiles" id="tiles"></div>
+  </header>
+
+  <main>
+    <section class="card"><h2>Signups and attendees by month</h2><canvas id="lineChart" height="110"></canvas></section>
+    <section class="card"><h2>Social reach and site visits by month</h2><canvas id="barChart" height="110"></canvas></section>
+    <section class="card">
+      <h2>Events</h2>
+      <table id="events">
+        <thead><tr><th>Date</th><th>Event</th><th>Attendees</th><th>Signups</th></tr></thead>
+        <tbody id="eventRows"></tbody>
+      </table>
+    </section>
+  </main>
+
+  <!-- chart.js from a cdn, only external thing I use -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script>
+    // grabs the numbers from my flask api and draws the tiles, two charts, and the events table
+    async function getJSON(url) { return (await fetch(url)).json(); }
+    function tile(num, label) { return `<div class="tile"><div class="num">${num.toLocaleString()}</div><div class="label">${label}</div></div>`; }
+
+    async function loadTiles() {
+      const s = await getJSON("/api/summary");
+      document.getElementById("tiles").innerHTML = [
+        tile(s.events, "events run"),
+        tile(s.attendees, "total attendees"),
+        tile(s.signups, "Gemini signups"),
+        tile(s.reach, "social reach"),
+        tile(s.site_visits, "site visits"),
+      ].join("");
+    }
+    async function loadCharts() {
+      const t = await getJSON("/api/timeseries");
+      new Chart(document.getElementById("lineChart"), {
+        type: "line",
+        data: { labels: t.labels, datasets: [
+          { label: "Gemini signups", data: t.signups, borderColor: "#1a73e8", backgroundColor: "rgba(26,115,232,.1)", tension: .3, fill: true },
+          { label: "attendees", data: t.attendees, borderColor: "#188038", backgroundColor: "rgba(24,128,56,.1)", tension: .3, fill: true },
+        ] },
+        options: { responsive: true, plugins: { legend: { position: "bottom" } } },
+      });
+      new Chart(document.getElementById("barChart"), {
+        type: "bar",
+        data: { labels: t.labels, datasets: [
+          { label: "social reach", data: t.reach, backgroundColor: "#8ab4f8" },
+          { label: "site visits", data: t.site_visits, backgroundColor: "#a8dab5" },
+        ] },
+        options: { responsive: true, plugins: { legend: { position: "bottom" } } },
+      });
+    }
+    async function loadEvents() {
+      const events = await getJSON("/api/events");
+      document.getElementById("eventRows").innerHTML = events
+        .map((e) => `<tr><td>${e.date}</td><td>${e.name}</td><td>${e.attendees}</td><td>${e.signups}</td></tr>`)
+        .join("");
+    }
+    loadTiles();
+    loadCharts();
+    loadEvents();
+  </script>
+</body>
+</html>
